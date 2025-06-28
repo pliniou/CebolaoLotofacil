@@ -1,4 +1,4 @@
-# 🎲 Cebolao Generator
+# 🎲 Cebolao Lotofácil Generator
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-Android-blue)
