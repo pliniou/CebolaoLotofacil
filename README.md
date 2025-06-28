@@ -10,10 +10,9 @@ Um assistente inteligente e sofisticado para apostadores da Lotofácil, desenvol
 
 ## 📱 Telas do Aplicativo
 
-![Tela Inicial](screenshots/tela1.jpg "1")
-![Tela do Gerador](screenshots/tela2.jpg "2")
-![Tela de Jogos Gerados](screenshots/tela3.jpg "3")
-![Tela de Conferencia de Jogos](screenshots/tela4.jpg "4")
+| ![Tela Inicial](screenshots/tela1.jpg "1") | ![Tela do Gerador](screenshots/tela2.jpg "2") | ![Tela de Jogos Gerados](screenshots/tela3.jpg "3") | ![Tela de Conferencia de Jogos](screenshots/tela4.jpg "4") |
+|:------------------------------------------:|:---------------------------------------------:|:---------------------------------------------------:|:----------------------------------------------------------:|
+| Tela Inicial                               | Gerador                                       | Jogos Gerados                                      | Conferência de Jogos                                       |
 
 ---
 
