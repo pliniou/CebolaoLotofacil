@@ -1,6 +1,7 @@
 package com.example.cebolaolotofacil.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,13 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cebolaolotofacil.R
 import com.example.cebolaolotofacil.ui.components.InfoDialog
 import com.example.cebolaolotofacil.viewmodels.AboutViewModel
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +65,7 @@ fun AboutScreen(aboutViewModel: AboutViewModel = viewModel()) {
             TopAppBar(
                 title = {
                     Text(
-                        "Sobre o Cebolão",
+                        "Sobre o App",
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
@@ -80,9 +84,20 @@ fun AboutScreen(aboutViewModel: AboutViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            Image(
+                painter = painterResource(id = R.drawable.icone_lotofacil),
+                contentDescription = "Logo da Cebola Studios",
+                modifier = Modifier
+                    .fillMaxWidth(0.1f)
+                    .padding(vertical = 8.dp),
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+
             // App Info Header
             Text(
-                text = "🧅 ${appInfo.appName}",
+                text = appInfo.appName,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
@@ -92,7 +107,7 @@ fun AboutScreen(aboutViewModel: AboutViewModel = viewModel()) {
             )
 
             Text(
-                text = "Ferramenta estatística para geração inteligente de jogos",
+                text = "Ferramenta estatística para geração inteligente de jogos da Lotofácil",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -146,12 +161,18 @@ private fun AppFooter(appInfo: com.example.cebolaolotofacil.viewmodels.AppInfo) 
             ),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Text(
-            text = "🧅 Cebola Studios",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(top = 4.dp)
-        )
+        ) {
+
+            Text(
+                text = "Cebola Studios",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
         Text(
             text = "Versão ${appInfo.versionName}",
             style = MaterialTheme.typography.labelSmall,
@@ -184,7 +205,8 @@ private fun ClickableInfoSection(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                // CORREÇÃO: Adicionado contentDescription para acessibilidade.
+                contentDescription = "Ícone da seção $title",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(end = 16.dp)
             )

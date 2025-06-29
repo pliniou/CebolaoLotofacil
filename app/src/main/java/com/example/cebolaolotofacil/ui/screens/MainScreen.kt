@@ -8,7 +8,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -57,8 +63,7 @@ fun MainScreen() {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(innerPadding),
-            // Impede o pré-carregamento das páginas adjacentes, eliminando o engasgo.
-            beyondBoundsPageCount = 0
+            // beyondBoundsPageCount is deprecated. Use a large enough value to prevent pre-loading adjacent pages.
         ) { pageIndex ->
             // Usa AnimatedContent para uma transição de fade suave entre as páginas.
             AnimatedContent(

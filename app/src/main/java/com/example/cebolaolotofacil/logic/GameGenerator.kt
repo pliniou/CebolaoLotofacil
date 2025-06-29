@@ -10,14 +10,21 @@ class GameGenerationException(message: String) : Exception(message)
 
 object GameGenerator {
 
+    // VALOR PADRÃO PARA O MÁXIMO DE TENTATIVAS
+    private const val DEFAULT_MAX_ATTEMPTS = 1_000_000
+
     fun generateGames(
         activeFilters: List<FilterState>,
         count: Int,
-        lastDraw: Set<Int>? = null
+        lastDraw: Set<Int>? = null,
+        // CORREÇÃO: Adicionado o parâmetro opcional 'maxAttempts' com um valor padrão.
+        // Agora, os testes podem passar um valor menor, mas o app usará o padrão.
+        maxAttempts: Int = DEFAULT_MAX_ATTEMPTS
     ): List<LotofacilGame> {
         val validGames = mutableListOf<LotofacilGame>()
         var attempts = 0
-        val maxAttempts = 1_000_000
+        // Usa o parâmetro recebido
+        // val maxAttempts = 1_000_000 (linha removida)
 
         val validationAttempts = mutableMapOf<FilterType, Int>()
         activeFilters.forEach { validationAttempts[it.type] = 0 }
@@ -51,7 +58,7 @@ object GameGenerator {
         game: LotofacilGame,
         activeFilters: List<FilterState>,
         lastDraw: Set<Int>?,
-        validationAttempts: MutableMap<FilterType, Int> // Novo parâmetro
+        validationAttempts: MutableMap<FilterType, Int>
     ): Boolean {
         for (filterState in activeFilters) {
             if (!filterState.isEnabled) continue

@@ -74,7 +74,8 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 title = {
                     Text(
                         text = "Cebolão Lotofácil Generator 1.0",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -99,7 +100,9 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
             val infiniteTransition = rememberInfiniteTransition(label = "logoPulse")
             val scale by infiniteTransition.animateFloat(
                 initialValue = 1f,
-                targetValue = if (showWelcomeAnimation) 1.08f else 1.02f,
+                // CORREÇÃO: O comentário foi ajustado para refletir a lógica correta.
+                // A animação pulsa com `targetValue = 1.08f` e para quando o `targetValue` se torna `1f`.
+                targetValue = if (showWelcomeAnimation) 1.08f else 1f,
                 animationSpec = infiniteRepeatable(
                     animation = tween(
                         durationMillis = if (showWelcomeAnimation) 1000 else 2200,
@@ -114,7 +117,7 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 painter = painterResource(id = R.drawable.icone_lotofacil),
                 contentDescription = "Logo Cebolão Generator",
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(70.dp)
                     .graphicsLayer {
                         scaleX = scale
                         scaleY = scale
@@ -214,7 +217,7 @@ private fun InfoCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = null, // Ícone decorativo, o texto do card explica
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(30.dp)
             )
@@ -241,7 +244,7 @@ private fun TipCard(
     currentTip: String,
     onNextTip: () -> Unit,
     animationEnabled: Boolean = true,
-    delay: Int = 0
+    @Suppress("SameParameterValue") delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
@@ -272,7 +275,7 @@ private fun TipCard(
         ) {
             Icon(
                 imageVector = Icons.Default.Lightbulb,
-                contentDescription = null,
+                contentDescription = null, // Ícone decorativo, o texto do card explica
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(30.dp)
             )

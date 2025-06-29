@@ -1,5 +1,6 @@
 package com.example.cebolaolotofacil.ui.screens
 
+import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,8 +46,13 @@ import com.example.cebolaolotofacil.ui.components.InfoDialog
 import com.example.cebolaolotofacil.viewmodels.GameViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image // Importação necessária
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.ui.res.painterResource // Importação necessária
+import com.example.cebolaolotofacil.R // Importação necessária
+import androidx.compose.ui.layout.ContentScale // Importação necessária
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun GeneratedGamesScreen(
     gameViewModel: GameViewModel,
@@ -116,22 +122,37 @@ fun GeneratedGamesScreen(
     ) { innerPadding ->
         if (games.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding).padding(24.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
                 contentAlignment = Alignment.Center
             ) {
+                // ***** NOVO: Imagem de fundo sutil para o estado vazio *****
+                Image(
+                    painter = painterResource(id = R.drawable.icone_600x1000_cartela_lotofacil),
+                    contentDescription = null, // Imagem decorativa, o texto explica o contexto
+                    modifier = Modifier.fillMaxSize().alpha(0.1f), // Mais transparente
+                    contentScale = ContentScale.Crop // Cobrir o Box
+                )
+
                 Card(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp)),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(32.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Games,
-                            contentDescription = null,
+                            contentDescription = null, // Ícone decorativo, texto explica
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                         )
@@ -146,7 +167,9 @@ fun GeneratedGamesScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(games, key = { it.numbers }) { game ->

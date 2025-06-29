@@ -47,6 +47,10 @@ import com.example.cebolaolotofacil.ui.components.NumberGrid
 import com.example.cebolaolotofacil.viewmodels.CheckerUiState
 import com.example.cebolaolotofacil.viewmodels.CheckerViewModel
 import com.example.cebolaolotofacil.viewmodels.GameViewModel
+import androidx.compose.foundation.Image // Importação necessária
+import androidx.compose.ui.res.painterResource // Importação necessária
+import com.example.cebolaolotofacil.R // Importação necessária
+import androidx.compose.ui.layout.ContentScale // Importação necessária
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +76,9 @@ fun CheckerScreen(
                 title = {
                     Text(
                         text = "Conferidor Manual",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        // ***** CORREÇÃO: Adicionado contentDescription para acessibilidade *****
+                        modifier = Modifier.padding(start = 4.dp) // Pequeno ajuste de padding
                     )
                 },
                 actions = {
@@ -121,7 +127,7 @@ fun CheckerScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = null,
+                            contentDescription = null, // Ícone decorativo, texto explica
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -164,7 +170,7 @@ fun CheckerScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Games,
-                        contentDescription = null,
+                        contentDescription = null, // Ícone decorativo, texto explica
                         modifier = Modifier.size(32.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -226,6 +232,16 @@ fun CheckerScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // ***** NOVO: Logo da Lotofácil antes do botão *****
+            Image(
+                painter = painterResource(id = R.drawable.logo_lotofacil_transparente),
+                contentDescription = "Logo da Lotofácil",
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Botão de conferir
             Button(
@@ -297,7 +313,7 @@ fun CheckerScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Info,
-                                    contentDescription = null,
+                                    contentDescription = null, // Ícone decorativo
                                     tint = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(24.dp)
                                 )

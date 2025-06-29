@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.cebolaolotofacil.data.LotofacilGame
 import com.example.cebolaolotofacil.ui.theme.CebolaoLotofacilTheme
 
-@OptIn(ExperimentalLayoutApi::class)
+@ExperimentalLayoutApi
 @Composable
 fun GameCard(
     game: LotofacilGame,
@@ -72,10 +72,14 @@ fun GameCard(
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically // Alinha ícones verticalmente
             ) {
                 IconButton(onClick = onInfoClick, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Info, contentDescription = "Ver estatísticas do jogo")
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = "Ver estatísticas do jogo"
+                    )
                 }
 
                 val rotation by animateFloatAsState(
@@ -84,9 +88,14 @@ fun GameCard(
                 )
                 IconButton(
                     onClick = onCheckClick,
-                    modifier = Modifier.size(36.dp).graphicsLayer { rotationZ = rotation }
+                    modifier = Modifier
+                        .size(36.dp)
+                        .graphicsLayer { rotationZ = rotation }
                 ) {
-                    Icon(Icons.Default.Search, contentDescription = "Conferir jogo no histórico")
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Conferir jogo no histórico"
+                    )
                 }
             }
         }
@@ -111,13 +120,12 @@ private fun NumberBall(number: Int) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
 fun GameCardPreview() {
     val previewGame = LotofacilGame(setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
     CebolaoLotofacilTheme {
-        // *** CHAMADA CORRIGIDA ***
-        // Fornecemos valores padrão para os novos parâmetros, apenas para o preview funcionar.
         GameCard(
             game = previewGame,
             isChecking = false,
