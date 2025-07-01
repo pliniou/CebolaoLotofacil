@@ -14,17 +14,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// Um sealed class para representar os diferentes estados da nossa UI de forma mais clara.
 sealed class GenerationUiState {
-    object Idle : GenerationUiState() // Estado inicial
-    object Loading : GenerationUiState() // Gerando jogos
-    data class Success(val games: List<LotofacilGame>) : GenerationUiState() // Sucesso
-    data class Error(val message: String) : GenerationUiState() // Falha
+    data object Idle : GenerationUiState()
+    data object Loading : GenerationUiState()
+    data class Success(val games: List<LotofacilGame>) : GenerationUiState()
+    data class Error(val message: String) : GenerationUiState()
 }
 
 class FiltersViewModel : ViewModel() {
 
-    // Renomeei de _filterStates para _uiState para ser mais descritivo do que ele contém
     private val _filterStates = MutableStateFlow<List<FilterState>>(listOf())
     val filterStates: StateFlow<List<FilterState>> = _filterStates.asStateFlow()
 
@@ -39,7 +37,6 @@ class FiltersViewModel : ViewModel() {
     }
 
     private fun initializeFilters() {
-        // Usamos .entries que é a forma recomendada para iterar sobre enums em Kotlin moderno
         _filterStates.value = FilterType.entries.map { filterType ->
             FilterState(type = filterType)
         }
@@ -84,30 +81,29 @@ class FiltersViewModel : ViewModel() {
     }
 
     fun onGenerateGamesClicked(quantity: Int) {
+        // A geração de jogos é uma tarefa de CPU, então Dispatchers.Default está correto.
         viewModelScope.launch(Dispatchers.Default) {
             _generationState.value = GenerationUiState.Loading
-            kotlinx.coroutines.delay(500)
+            // CORREÇÃO: Removido o delay artificial que não pertence ao código de produção.
+            // kotlinx.coroutines.delay(500)
 
-            try { // *** INÍCIO DO BLOCO TRY ***
+            try {
                 val activeFilters = _filterStates.value.filter { it.isEnabled }
                 val generatedGames = GameGenerator.generateGames(
                     activeFilters = activeFilters,
                     count = quantity,
                     lastDraw = _lastDrawSelection.value
                 )
-                // Se chegar aqui, a geração foi um sucesso
                 _generationState.value = GenerationUiState.Success(generatedGames)
 
-            } catch (e: GameGenerationException) { // *** CAPTURA A EXCEÇÃO ESPECÍFICA ***
-                // Passa a mensagem de erro detalhada para a UI
+            } catch (e: GameGenerationException) {
                 _generationState.value = GenerationUiState.Error(e.message ?: "Erro desconhecido na geração.")
-            } catch (e: Exception) { // Captura genérica para outros erros
+            } catch (e: Exception) {
                 _generationState.value = GenerationUiState.Error("Ocorreu um erro inesperado.")
             }
         }
     }
 
-    // Função para resetar o estado após o usuário ver a mensagem de sucesso/erro.
     fun dismissGenerationState() {
         _generationState.value = GenerationUiState.Idle
     }

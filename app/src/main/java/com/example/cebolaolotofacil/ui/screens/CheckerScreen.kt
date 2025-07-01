@@ -1,5 +1,6 @@
 package com.example.cebolaolotofacil.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,20 +38,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cebolaolotofacil.R
 import com.example.cebolaolotofacil.ui.components.CheckResultCard
 import com.example.cebolaolotofacil.ui.components.NumberGrid
 import com.example.cebolaolotofacil.viewmodels.CheckerUiState
 import com.example.cebolaolotofacil.viewmodels.CheckerViewModel
 import com.example.cebolaolotofacil.viewmodels.GameViewModel
-import androidx.compose.foundation.Image // Importação necessária
-import androidx.compose.ui.res.painterResource // Importação necessária
-import com.example.cebolaolotofacil.R // Importação necessária
-import androidx.compose.ui.layout.ContentScale // Importação necessária
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,9 +76,7 @@ fun CheckerScreen(
                 title = {
                     Text(
                         text = "Conferidor Manual",
-                        style = MaterialTheme.typography.titleLarge,
-                        // ***** CORREÇÃO: Adicionado contentDescription para acessibilidade *****
-                        modifier = Modifier.padding(start = 4.dp) // Pequeno ajuste de padding
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 actions = {
@@ -107,7 +105,7 @@ fun CheckerScreen(
             )
         },
         bottomBar = {
-            // Rodapé melhorado com informação da base de dados
+            // NOVO: Rodapé melhorado com informação da base de dados
             lastContest?.let { contest ->
                 Card(
                     modifier = Modifier
@@ -233,7 +231,7 @@ fun CheckerScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ***** NOVO: Logo da Lotofácil antes do botão *****
+            // NOVO: Logo da Lotofácil antes do botão
             Image(
                 painter = painterResource(id = R.drawable.logo_lotofacil_transparente),
                 contentDescription = "Logo da Lotofácil",
@@ -253,7 +251,6 @@ fun CheckerScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                // Box com tamanho fixo para evitar mudanças de layout
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +66,7 @@ import com.example.cebolaolotofacil.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    val showWelcomeAnimation by homeViewModel.showWelcomeAnimation
+    val showWelcomeAnimation by remember { derivedStateOf { homeViewModel.showWelcomeAnimation.value } }
     val isCardsAnimationEnabled by homeViewModel.isCardsAnimationEnabled
 
     Scaffold(
@@ -96,18 +97,12 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Logo animado
             val infiniteTransition = rememberInfiniteTransition(label = "logoPulse")
             val scale by infiniteTransition.animateFloat(
                 initialValue = 1f,
-                // CORREÇÃO: O comentário foi ajustado para refletir a lógica correta.
-                // A animação pulsa com `targetValue = 1.08f` e para quando o `targetValue` se torna `1f`.
                 targetValue = if (showWelcomeAnimation) 1.08f else 1f,
                 animationSpec = infiniteRepeatable(
-                    animation = tween(
-                        durationMillis = if (showWelcomeAnimation) 1000 else 2200,
-                        easing = FastOutSlowInEasing
-                    ),
+                    animation = tween(1200, easing = FastOutSlowInEasing), // Animação simplificada
                     repeatMode = RepeatMode.Reverse
                 ),
                 label = "logoScale"
@@ -125,7 +120,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 contentScale = ContentScale.Fit
             )
 
-            // Título principal
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -150,7 +144,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 )
             }
 
-            // Cards informativos
             InfoCard(
                 icon = Icons.AutoMirrored.Filled.Rule,
                 title = "Como Jogar",
@@ -167,7 +160,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 delay = 150
             )
 
-            // Card de dica rotativa
             TipCard(
                 currentTip = homeViewModel.getCurrentTip(),
                 onNextTip = { homeViewModel.nextTip() },
@@ -217,7 +209,7 @@ private fun InfoCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null, // Ícone decorativo, o texto do card explica
+                contentDescription = null, // Ícone decorativo, o texto explica
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(30.dp)
             )
@@ -275,7 +267,7 @@ private fun TipCard(
         ) {
             Icon(
                 imageVector = Icons.Default.Lightbulb,
-                contentDescription = null, // Ícone decorativo, o texto do card explica
+                contentDescription = null, // Ícone decorativo, o texto explica
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(30.dp)
             )

@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,7 +75,7 @@ fun GameCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically // Alinha ícones verticalmente
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onInfoClick, modifier = Modifier.size(36.dp)) {
                     Icon(
@@ -115,7 +117,10 @@ private fun NumberBall(number: Int) {
             text = "%02d".format(number),
             color = MaterialTheme.colorScheme.onPrimary,
             fontWeight = FontWeight.Bold,
-            fontSize = 12.sp
+            fontSize = 12.sp,
+            modifier = Modifier.semantics {
+                contentDescription = "Número $number"
+            }
         )
     }
 }

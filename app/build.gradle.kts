@@ -44,7 +44,6 @@ android {
 
 dependencies {
 
-    // Dependências mantidas como na análise anterior (sem a Lottie)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,11 +60,13 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
+
     // Testes de Unidade
     testImplementation(libs.junit)
-    testImplementation("io.mockk:mockk:1.13.11") // <-- NOVO: Para mocking
-    testImplementation("app.cash.turbine:turbine:1.1.0") // <-- NOVO: Para testar Flows
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1") // <-- NOVO: Para testar Coroutines
+    testImplementation("io.mockk:mockk:1.13.11") // Para mocking
+    testImplementation("app.cash.turbine:turbine:1.1.0") // Para testar Flows
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1") // Para testar Coroutines
+
     // Testes de Instrumentação (UI)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

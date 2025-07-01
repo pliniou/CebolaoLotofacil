@@ -62,10 +62,9 @@ fun MainScreen() {
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding(innerPadding),
-            // beyondBoundsPageCount is deprecated. Use a large enough value to prevent pre-loading adjacent pages.
+            modifier = Modifier.padding(innerPadding)
         ) { pageIndex ->
-            // Usa AnimatedContent para uma transição de fade suave entre as páginas.
+            // CORREÇÃO: Usa AnimatedContent para uma transição de fade suave entre as páginas.
             AnimatedContent(
                 targetState = pageIndex,
                 transitionSpec = {

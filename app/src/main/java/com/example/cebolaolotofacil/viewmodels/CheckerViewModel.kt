@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed class CheckerUiState {
-    object Idle : CheckerUiState()
-    object Loading : CheckerUiState()
+    data object Idle : CheckerUiState()
+    data object Loading : CheckerUiState()
     data class Success(val result: CheckResult) : CheckerUiState()
     data class Error(val message: String) : CheckerUiState()
 }
@@ -29,34 +29,29 @@ class CheckerViewModel(application: Application) : AndroidViewModel(application)
     private val _selectedNumbers = MutableStateFlow<Set<Int>>(emptySet())
     val selectedNumbers = _selectedNumbers.asStateFlow()
 
-    // Nova variável para expor o número do último concurso
     private val _lastContestNumber = MutableStateFlow<Int?>(null)
     val lastContestNumber = _lastContestNumber.asStateFlow()
 
     init {
-        // Carrega o número do último concurso assim que o ViewModel é criado.
         loadLastContestInfo()
     }
 
     private fun loadLastContestInfo() {
         viewModelScope.launch {
-            // Apenas para garantir que o histórico seja carregado
+            // A leitura inicial pode ser feita na thread padrão, pois getHistory fará o switch interno para IO
             historyRepository.getHistory()
             _lastContestNumber.value = historyRepository.getLastContestNumber()
         }
     }
-    // *** NOVA FUNÇÃO ***
-    // Define um jogo para ser conferido, vindo de uma fonte externa (atalho).
+
     fun setGameToCheck(numbers: Set<Int>) {
         if (numbers.size == 15) {
             _selectedNumbers.value = numbers
-            // Dispara a conferência imediatamente
             onCheckGameClicked()
         }
     }
 
     fun onNumberClicked(number: Int) {
-        // A lógica de conferência não é mais chamada aqui.
         _uiState.value = CheckerUiState.Idle
         _selectedNumbers.update { currentSelection ->
             val newSelection = currentSelection.toMutableSet()
@@ -71,14 +66,14 @@ class CheckerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Nova função pública para ser chamada pelo botão "Conferir".
     fun onCheckGameClicked() {
         val currentGame = _selectedNumbers.value
-        if (currentGame.size != 15) return // Segurança extra
+        if (currentGame.size != 15) return
 
         _uiState.value = CheckerUiState.Loading
 
-        viewModelScope.launch(Dispatchers.Default) {
+        // CORREÇÃO: Alterado para Dispatchers.IO, pois a leitura do histórico é uma operação de I/O.
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val history = historyRepository.getHistory()
                 if (history.isEmpty()) {

@@ -84,17 +84,6 @@ fun AboutScreen(aboutViewModel: AboutViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.icone_lotofacil),
-                contentDescription = "Logo da Cebola Studios",
-                modifier = Modifier
-                    .fillMaxWidth(0.1f)
-                    .padding(vertical = 8.dp),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-
             // App Info Header
             Text(
                 text = appInfo.appName,
@@ -107,7 +96,7 @@ fun AboutScreen(aboutViewModel: AboutViewModel = viewModel()) {
             )
 
             Text(
-                text = "Ferramenta estatística para geração inteligente de jogos da Lotofácil",
+                text = "Ferramenta estatística para geração de jogos da Lotofácil",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -244,6 +233,7 @@ E sim, escolhemos a cebola como símbolo porque, assim como ela, nossos algoritm
 private fun getMethodologyContent() = "Como Funciona" to """O Cebolão Generator utiliza análise estatística avançada baseada em mais de 3.000 sorteios históricos da Lotofácil para gerar combinações otimizadas.
 
 📊 FILTROS ESTATÍSTICOS:
+
 - Soma das dezenas (padrão: 170-220)
 - Distribuição par/ímpar equilibrada
 - Quantidade de números primos
@@ -252,6 +242,7 @@ private fun getMethodologyContent() = "Como Funciona" to """O Cebolão Generator
 - Múltiplos e repetições do sorteio anterior
 
 🎯 PROCESSO DE GERAÇÃO:
+
 1. Aplica filtros configurados pelo usuário
 2. Elimina combinações estatisticamente improváveis
 3. Prioriza padrões com maior frequência histórica
@@ -264,12 +255,14 @@ private fun getLegalContent() = "Aviso Legal" to """📋 TERMOS DE USO:
 Este aplicativo é uma ferramenta de análise estatística e entretenimento educativo. O Cebolão Generator não possui qualquer vínculo oficial com a Caixa Econômica Federal ou com os jogos da Lotofácil.
 
 ⚖️ RESPONSABILIDADES:
+
 - As apostas são de inteira responsabilidade do usuário
 - Não garantimos prêmios ou resultados específicos
 - Os custos das apostas são por conta do apostador
 - Jogue sempre com responsabilidade e moderação
 
 🔒 PRIVACIDADE:
+
 - Não coletamos dados pessoais dos usuários
 - Não armazenamos informações de apostas
 - Todos os cálculos são feitos localmente no dispositivo"""
