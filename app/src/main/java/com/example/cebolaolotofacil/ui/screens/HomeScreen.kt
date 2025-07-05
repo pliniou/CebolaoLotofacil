@@ -1,12 +1,7 @@
 package com.example.cebolaolotofacil.ui.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,7 +37,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +60,6 @@ import com.example.cebolaolotofacil.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    val showWelcomeAnimation by remember { derivedStateOf { homeViewModel.showWelcomeAnimation.value } }
     val isCardsAnimationEnabled by homeViewModel.isCardsAnimationEnabled
 
     Scaffold(
@@ -94,19 +87,24 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             Spacer(modifier = Modifier.height(6.dp))
 
-            val infiniteTransition = rememberInfiniteTransition(label = "logoPulse")
-            val scale by infiniteTransition.animateFloat(
-                initialValue = 1f,
-                targetValue = if (showWelcomeAnimation) 1.08f else 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1200, easing = FastOutSlowInEasing), // Animação simplificada
-                    repeatMode = RepeatMode.Reverse
-                ),
+            // Animação de "pop-in" que executa apenas uma vez
+            var isLogoVisible by remember { mutableStateOf(false) }
+            val scale by animateFloatAsState(
+                targetValue = if (isLogoVisible) 1f else 0.5f,
+                animationSpec = tween(durationMillis = 500, easing = androidx.compose.animation.core.FastOutSlowInEasing),
                 label = "logoScale"
             )
+            val alpha by animateFloatAsState(
+                targetValue = if (isLogoVisible) 1f else 0f,
+                animationSpec = tween(durationMillis = 400),
+                label = "logoAlpha"
+            )
+
+            LaunchedEffect(Unit) {
+                isLogoVisible = true
+            }
 
             Image(
                 painter = painterResource(id = R.drawable.icone_lotofacil),
@@ -116,10 +114,10 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                     .graphicsLayer {
                         scaleX = scale
                         scaleY = scale
+                        this.alpha = alpha
                     },
                 contentScale = ContentScale.Fit
             )
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -143,7 +141,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-
             InfoCard(
                 icon = Icons.AutoMirrored.Filled.Rule,
                 title = "Como Jogar",
@@ -151,7 +148,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 animationEnabled = isCardsAnimationEnabled,
                 delay = 0
             )
-
             InfoCard(
                 icon = Icons.Default.FilterAlt,
                 title = "Filtros Estatísticos",
@@ -159,14 +155,12 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 animationEnabled = isCardsAnimationEnabled,
                 delay = 150
             )
-
             TipCard(
                 currentTip = homeViewModel.getCurrentTip(),
                 onNextTip = { homeViewModel.nextTip() },
                 animationEnabled = isCardsAnimationEnabled,
                 delay = 250
             )
-
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -181,18 +175,15 @@ private fun InfoCard(
     delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(delay.toLong())
         isVisible = true
     }
-
     val alpha by animateFloatAsState(
         targetValue = if (isVisible && animationEnabled) 1f else if (!animationEnabled) 1f else 0f,
         animationSpec = tween(durationMillis = 600, delayMillis = delay),
         label = "cardAlpha"
     )
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -239,18 +230,15 @@ private fun TipCard(
     @Suppress("SameParameterValue") delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(delay.toLong())
         isVisible = true
     }
-
     val alpha by animateFloatAsState(
         targetValue = if (isVisible && animationEnabled) 1f else if (!animationEnabled) 1f else 0f,
         animationSpec = tween(durationMillis = 600, delayMillis = delay),
         label = "tipCardAlpha"
     )
-
     Card(
         modifier = Modifier
             .fillMaxWidth()

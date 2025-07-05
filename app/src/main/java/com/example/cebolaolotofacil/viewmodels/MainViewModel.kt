@@ -9,10 +9,8 @@ import com.example.cebolaolotofacil.logic.HistoryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
@@ -34,34 +32,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Inicializa a aplicação com carregamento progressivo.
+     * As chamadas de delay foram removidas para otimizar o tempo de inicialização.
      */
     private fun initializeApp() {
         viewModelScope.launch {
             try {
                 // Fase 1: Carregando recursos básicos
                 _loadingMessage.value = "Carregando recursos..."
-                _loadingProgress.value = 0.2f
-                delay(300)
+                _loadingProgress.value = 0.25f
 
-                // Fase 2: Inicializando repositório
+                // Fase 2: Inicializando e carregando dados históricos (operação real de I/O)
                 _loadingMessage.value = "Preparando dados históricos..."
-                _loadingProgress.value = 0.5f
-
-                // Carrega dados históricos
-                HistoryRepository(getApplication()).getHistory()
-
-                // Fase 3: Validando dados
-                _loadingMessage.value = "Validando informações..."
+                HistoryRepository(getApplication()).getHistory() // Operação principal
                 _loadingProgress.value = 0.8f
-                delay(400)
 
-                // Fase 4: Finalizando
+                // Fase 3: Finalizando
                 _loadingMessage.value = "Quase pronto..."
                 _loadingProgress.value = 1.0f
-                delay(300)
 
+                // Conclui o carregamento
                 _isLoading.value = false
-
             } catch (exception: Exception) {
                 handleLoadingError(exception)
             }

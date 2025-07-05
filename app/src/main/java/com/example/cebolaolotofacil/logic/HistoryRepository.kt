@@ -21,7 +21,7 @@ class HistoryRepository(private val context: Context) {
             val lineRegex = """^\d+\s*-\s*.*$""".toRegex()
 
             try {
-                context.assets.open("lotofacil-resultados-1-3421.txt").bufferedReader().useLines { lines ->
+                context.assets.open("lotofacil_resultados.txt").bufferedReader().useLines { lines ->
                     lines.forEach { line ->
                         // SÓ PROCESSA A LINHA SE ELA CORRESPONDER AO FORMATO ESPERADO
                         if (line.isNotBlank() && line.matches(lineRegex)) {
