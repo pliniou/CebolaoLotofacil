@@ -22,12 +22,15 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
+import androidx.compose.runtime.derivedStateOf
 
 @Composable
 fun RepeatedNumbersFilterCard(
@@ -41,6 +44,11 @@ fun RepeatedNumbersFilterCard(
     onRepetitionCountChange: (Int) -> Unit,
     onInfoClick: () -> Unit
 ) {
+    // Otimização: A visibilidade do slider só é recalculada quando o tamanho da seleção muda de/para 15.
+    val isSliderVisible by remember {
+        derivedStateOf { lastDrawNumbers.size == 15 }
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -82,7 +90,7 @@ fun RepeatedNumbersFilterCard(
                     )
 
                     // Slider de quantidade (só aparece quando 15 dezenas são selecionadas)
-                    AnimatedVisibility(visible = lastDrawNumbers.size == 15) {
+                    AnimatedVisibility(visible = isSliderVisible) {
                         Column(modifier = Modifier.padding(top = 16.dp)) {
                             Text(
                                 "Quantas delas devem se repetir?",

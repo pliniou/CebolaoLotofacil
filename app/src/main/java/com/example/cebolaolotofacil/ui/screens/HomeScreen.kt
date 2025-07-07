@@ -60,7 +60,9 @@ import com.example.cebolaolotofacil.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    val isCardsAnimationEnabled by homeViewModel.isCardsAnimationEnabled
+    // Estado para controlar se as animações de entrada devem ser executadas.
+    // Lendo o estado do ViewModel que agora tem a lógica corrigida.
+    val animationEnabled by homeViewModel.isIntroAnimationEnabled
 
     Scaffold(
         topBar = {
@@ -88,7 +90,6 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(6.dp))
-
             // Animação de "pop-in" que executa apenas uma vez
             var isLogoVisible by remember { mutableStateOf(false) }
             val scale by animateFloatAsState(
@@ -118,6 +119,7 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                     },
                 contentScale = ContentScale.Fit
             )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -141,24 +143,25 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+
             InfoCard(
                 icon = Icons.AutoMirrored.Filled.Rule,
                 title = "Como Jogar",
                 content = "Marque de 15 a 20 números dos 25 disponíveis no volante. Você ganha acertando a partir de 11 dezenas sorteadas.",
-                animationEnabled = isCardsAnimationEnabled,
+                animationEnabled = animationEnabled,
                 delay = 0
             )
             InfoCard(
                 icon = Icons.Default.FilterAlt,
                 title = "Filtros Estatísticos",
                 content = "Use nossas ferramentas avançadas baseadas em análise de milhares de sorteios para criar jogos otimizados.",
-                animationEnabled = isCardsAnimationEnabled,
+                animationEnabled = animationEnabled,
                 delay = 150
             )
             TipCard(
                 currentTip = homeViewModel.getCurrentTip(),
                 onNextTip = { homeViewModel.nextTip() },
-                animationEnabled = isCardsAnimationEnabled,
+                animationEnabled = animationEnabled,
                 delay = 250
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,15 +178,19 @@ private fun InfoCard(
     delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(delay.toLong())
         isVisible = true
     }
+    // Lógica de animação: se a animação está desativada, o card aparece imediatamente (alpha=1).
+    // Se ativada, o alpha anima de 0 para 1 quando se torna visível.
     val alpha by animateFloatAsState(
-        targetValue = if (isVisible && animationEnabled) 1f else if (!animationEnabled) 1f else 0f,
-        animationSpec = tween(durationMillis = 600, delayMillis = delay),
+        targetValue = if (!animationEnabled || isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 600),
         label = "cardAlpha"
     )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -230,13 +237,14 @@ private fun TipCard(
     @Suppress("SameParameterValue") delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(delay.toLong())
         isVisible = true
     }
     val alpha by animateFloatAsState(
-        targetValue = if (isVisible && animationEnabled) 1f else if (!animationEnabled) 1f else 0f,
-        animationSpec = tween(durationMillis = 600, delayMillis = delay),
+        targetValue = if (!animationEnabled || isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 600),
         label = "tipCardAlpha"
     )
     Card(

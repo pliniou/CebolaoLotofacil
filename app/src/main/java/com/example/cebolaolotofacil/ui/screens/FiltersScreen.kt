@@ -38,7 +38,11 @@ fun FiltersScreen(
     val lastDrawSelection by filtersViewModel.lastDrawSelection.collectAsState()
     val context = LocalContext.current
 
-    val activeFiltersCount = filters.count { it.isEnabled }
+    // Otimização: A contagem de filtros só é recalculada quando a lista de filtros habilitados muda.
+    val activeFiltersCount by remember {
+        derivedStateOf { filters.count { it.isEnabled } }
+    }
+
     var gameQuantity by remember { mutableFloatStateOf(1f) }
     var showDialogFor by remember { mutableStateOf<FilterType?>(null) }
 
@@ -156,7 +160,6 @@ fun FiltersScreen(
                     steps = 28
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
                 if (generationState is GenerationUiState.Loading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 } else {

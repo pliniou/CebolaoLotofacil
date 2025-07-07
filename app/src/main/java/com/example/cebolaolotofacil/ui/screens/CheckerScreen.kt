@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +52,7 @@ import com.example.cebolaolotofacil.ui.components.NumberGrid
 import com.example.cebolaolotofacil.viewmodels.CheckerUiState
 import com.example.cebolaolotofacil.viewmodels.CheckerViewModel
 import com.example.cebolaolotofacil.viewmodels.GameViewModel
+import androidx.compose.runtime.derivedStateOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +64,14 @@ fun CheckerScreen(
     val selectedNumbers by checkerViewModel.selectedNumbers.collectAsState()
     val lastContest by checkerViewModel.lastContestNumber.collectAsState()
     val gameToAutoCheck by gameViewModel.gameToAutoCheck.collectAsState()
+
+    // Otimização: A UI não recompõe a cada seleção, apenas quando a condição muda.
+    val isButtonEnabled by remember {
+        derivedStateOf { selectedNumbers.size == 15 && checkerState !is CheckerUiState.Loading }
+    }
+    val showClearAction by remember {
+        derivedStateOf { selectedNumbers.isNotEmpty() }
+    }
 
     LaunchedEffect(gameToAutoCheck) {
         gameToAutoCheck?.let { numbers ->
@@ -80,8 +90,8 @@ fun CheckerScreen(
                     )
                 },
                 actions = {
-                    // Badge com contador dos números selecionados
-                    if (selectedNumbers.isNotEmpty()) {
+                    // Badge e botão de limpar só aparecem se houver números selecionados.
+                    if (showClearAction) {
                         Badge(
                             modifier = Modifier.padding(end = 8.dp),
                             containerColor = MaterialTheme.colorScheme.primary
@@ -92,7 +102,6 @@ fun CheckerScreen(
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
-
                         IconButton(onClick = { checkerViewModel.clearSelection() }) {
                             Icon(
                                 Icons.Default.Clear,
@@ -105,7 +114,7 @@ fun CheckerScreen(
             )
         },
         bottomBar = {
-            // NOVO: Rodapé melhorado com informação da base de dados
+            // Rodapé com informação da base de dados
             lastContest?.let { contest ->
                 Card(
                     modifier = Modifier
@@ -129,7 +138,6 @@ fun CheckerScreen(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
-
                         Text(
                             text = "Base de dados atualizada até o concurso: $contest",
                             style = MaterialTheme.typography.bodySmall,
@@ -172,13 +180,11 @@ fun CheckerScreen(
                         modifier = Modifier.size(32.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
-
                     Text(
                         text = "Como funciona",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-
                     Text(
                         text = "Selecione exatamente 15 dezenas abaixo ou envie um jogo da tela 'Jogos Gerados' para conferir automaticamente",
                         style = MaterialTheme.typography.bodyMedium,
@@ -188,7 +194,6 @@ fun CheckerScreen(
                     )
                 }
             }
-
             // Grid de números
             Card(
                 modifier = Modifier
@@ -208,7 +213,6 @@ fun CheckerScreen(
                             text = "Selecione as dezenas",
                             style = MaterialTheme.typography.titleMedium
                         )
-
                         Text(
                             text = "${selectedNumbers.size}/15",
                             style = MaterialTheme.typography.bodyMedium,
@@ -218,9 +222,7 @@ fun CheckerScreen(
                             fontWeight = if (selectedNumbers.size == 15) FontWeight.Bold else FontWeight.Normal
                         )
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
-
                     NumberGrid(
                         selectedNumbers = selectedNumbers,
                         onNumberClick = { number -> checkerViewModel.onNumberClicked(number) },
@@ -230,8 +232,6 @@ fun CheckerScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // NOVO: Logo da Lotofácil antes do botão
             Image(
                 painter = painterResource(id = R.drawable.logo_lotofacil_transparente),
                 contentDescription = "Logo da Lotofácil",
@@ -244,7 +244,7 @@ fun CheckerScreen(
             // Botão de conferir
             Button(
                 onClick = { checkerViewModel.onCheckGameClicked() },
-                enabled = selectedNumbers.size == 15 && checkerState !is CheckerUiState.Loading,
+                enabled = isButtonEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -281,6 +281,7 @@ fun CheckerScreen(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(28.dp))
 
             // Resultado da conferência
@@ -292,7 +293,7 @@ fun CheckerScreen(
             ) {
                 when (val state = checkerState) {
                     is CheckerUiState.Loading -> {
-                        // Loading já está no botão, mantemos vazio aqui
+                        // O estado de loading já é exibido no botão.
                     }
                     is CheckerUiState.Error -> {
                         Card(
@@ -332,11 +333,10 @@ fun CheckerScreen(
                         CheckResultCard(result = state.result)
                     }
                     is CheckerUiState.Idle -> {
-                        // Estado inicial - sem resultado para mostrar
+                        // Estado inicial - sem resultado para mostrar.
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
         }
     }

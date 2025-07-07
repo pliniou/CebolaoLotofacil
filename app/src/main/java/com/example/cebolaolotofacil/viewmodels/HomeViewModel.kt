@@ -9,18 +9,15 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel para a HomeScreen.
- * Gerencia animações e estado da tela principal.
+ * Gerencia o estado da tela principal, incluindo as dicas rotativas e as animações de introdução.
  */
 class HomeViewModel : ViewModel() {
 
-    private val _isCardsAnimationEnabled = mutableStateOf(true)
-    val isCardsAnimationEnabled: State<Boolean> = _isCardsAnimationEnabled
+    // Gerencia o estado para a animação de introdução "run-once".
+    private val _isIntroAnimationEnabled = mutableStateOf(true)
+    val isIntroAnimationEnabled: State<Boolean> = _isIntroAnimationEnabled
 
     private val _currentTipIndex = mutableStateOf(0)
-    val currentTipIndex: State<Int> = _currentTipIndex
-
-    private val _showWelcomeAnimation = mutableStateOf(true)
-    val showWelcomeAnimation: State<Boolean> = _showWelcomeAnimation
 
     // Dicas rotativas do Cebolão
     private val tips = listOf(
@@ -34,47 +31,42 @@ class HomeViewModel : ViewModel() {
 
     init {
         startTipRotation()
-        disableWelcomeAnimationAfterDelay()
+        // Desabilita a animação de introdução após um tempo para que ela não rode novamente.
+        disableIntroAnimationAfterDelay()
     }
 
     /**
-     * Inicia rotação automática das dicas.
+     * Inicia a rotação automática das dicas.
      */
     private fun startTipRotation() {
         viewModelScope.launch {
             while (true) {
-                delay(8000) // Troca dica a cada 8 segundos
+                delay(8000) // Troca a dica a cada 8 segundos
                 _currentTipIndex.value = (_currentTipIndex.value + 1) % tips.size
             }
         }
     }
 
     /**
-     * Desabilita animação de boas-vindas após tempo determinado.
+     * Desabilita as animações de entrada após um delay para que rodem apenas na primeira vez
+     * que a tela é exibida, e não em recomposições ou mudanças de configuração.
      */
-    private fun disableWelcomeAnimationAfterDelay() {
+    private fun disableIntroAnimationAfterDelay() {
         viewModelScope.launch {
-            delay(3000)
-            _showWelcomeAnimation.value = false
+            delay(3000) // Tempo suficiente para as animações de entrada terminarem.
+            _isIntroAnimationEnabled.value = false
         }
     }
 
     /**
-     * Obtém a dica atual.
+     * Obtém a dica atual a ser exibida.
      */
     fun getCurrentTip(): String = tips[_currentTipIndex.value]
 
     /**
-     * Avança para próxima dica manualmente.
+     * Avança para a próxima dica, geralmente acionado por um clique do usuário.
      */
     fun nextTip() {
         _currentTipIndex.value = (_currentTipIndex.value + 1) % tips.size
-    }
-
-    /**
-     * Controla exibição das animações dos cards.
-     */
-    fun toggleCardsAnimation() {
-        _isCardsAnimationEnabled.value = !_isCardsAnimationEnabled.value
     }
 }
