@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cebolaolotofacil.data.FilterType
+import com.example.cebolaolotofacil.data.LotofacilConstants
 import com.example.cebolaolotofacil.ui.components.FilterCard
 import com.example.cebolaolotofacil.ui.components.InfoDialog
 import com.example.cebolaolotofacil.ui.components.RepeatedNumbersFilterCard
@@ -38,11 +37,9 @@ fun FiltersScreen(
     val lastDrawSelection by filtersViewModel.lastDrawSelection.collectAsState()
     val context = LocalContext.current
 
-    // Otimização: A contagem de filtros só é recalculada quando a lista de filtros habilitados muda.
     val activeFiltersCount by remember {
         derivedStateOf { filters.count { it.isEnabled } }
     }
-
     var gameQuantity by remember { mutableFloatStateOf(1f) }
     var showDialogFor by remember { mutableStateOf<FilterType?>(null) }
 
@@ -138,10 +135,11 @@ fun FiltersScreen(
                 }
             }
 
-            // Seção inferior com o slider de quantidade e o botão
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.Start // Alinhado à esquerda
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = "Quantidade de Jogos: ${gameQuantity.roundToInt()}",
@@ -149,7 +147,7 @@ fun FiltersScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Custo Total: ${NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(gameQuantity.roundToInt() * 3.0)}",
+                    text = "Custo Total: ${NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(gameQuantity.roundToInt() * LotofacilConstants.GAME_COST)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

@@ -7,10 +7,10 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.cebolaolotofacil.ui.screens.MainScreen
 import com.example.cebolaolotofacil.ui.theme.CebolaoLotofacilTheme
+import com.example.cebolaolotofacil.viewmodels.MainUiState
 import com.example.cebolaolotofacil.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
-
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,9 +19,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Mantém a splash screen visível enquanto o ViewModel estiver no estado de carregamento.
-        // A condição lê diretamente o .value do StateFlow, simplificando o controle.
+        // A condição observa o StateFlow de forma segura.
         splashScreen.setKeepOnScreenCondition {
-            viewModel.isLoading.value
+            viewModel.uiState.value is MainUiState.Loading
         }
 
         setContent {

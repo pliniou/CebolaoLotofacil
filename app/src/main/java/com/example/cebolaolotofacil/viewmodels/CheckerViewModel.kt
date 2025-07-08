@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 sealed class CheckerUiState {
     data object Idle : CheckerUiState()
@@ -20,7 +21,6 @@ sealed class CheckerUiState {
 }
 
 class CheckerViewModel(application: Application) : AndroidViewModel(application) {
-
     private val historyRepository = HistoryRepository(application)
 
     private val _uiState = MutableStateFlow<CheckerUiState>(CheckerUiState.Idle)
@@ -38,7 +38,6 @@ class CheckerViewModel(application: Application) : AndroidViewModel(application)
 
     private fun loadLastContestInfo() {
         viewModelScope.launch {
-            // A leitura inicial pode ser feita na thread padrão, pois getHistory fará o switch interno para IO
             historyRepository.getHistory()
             _lastContestNumber.value = historyRepository.getLastContestNumber()
         }
@@ -57,10 +56,8 @@ class CheckerViewModel(application: Application) : AndroidViewModel(application)
             val newSelection = currentSelection.toMutableSet()
             if (number in newSelection) {
                 newSelection.remove(number)
-            } else {
-                if (newSelection.size < 15) {
-                    newSelection.add(number)
-                }
+            } else if (newSelection.size < 15) {
+                newSelection.add(number)
             }
             newSelection
         }
@@ -71,37 +68,37 @@ class CheckerViewModel(application: Application) : AndroidViewModel(application)
         if (currentGame.size != 15) return
 
         _uiState.value = CheckerUiState.Loading
-
-        // CORREÇÃO: Alterado para Dispatchers.IO, pois a leitura do histórico é uma operação de I/O.
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
+                // A leitura do histórico é uma operação de I/O.
                 val history = historyRepository.getHistory()
                 if (history.isEmpty()) {
                     _uiState.value = CheckerUiState.Error("Arquivo de histórico não encontrado ou vazio.")
                     return@launch
                 }
 
-                val gameToCheck = LotofacilGame(currentGame)
-                val scoreCounts = mutableMapOf<Int, Int>()
-                var lastHit: Int? = null
+                // O processamento dos dados é uma tarefa de CPU.
+                val result = withContext(Dispatchers.Default) {
+                    val gameToCheck = LotofacilGame(currentGame)
+                    val scoreCounts = mutableMapOf<Int, Int>()
+                    var lastHit: Int? = null
 
-                history.forEach { draw ->
-                    val hits = gameToCheck.numbers.intersect(draw.numbers).size
-                    if (hits >= 11) {
-                        scoreCounts[hits] = (scoreCounts[hits] ?: 0) + 1
-                        if (lastHit == null) {
-                            lastHit = draw.contestNumber
+                    history.forEach { draw ->
+                        val hits = gameToCheck.numbers.intersect(draw.numbers).size
+                        if (hits >= 11) {
+                            scoreCounts[hits] = (scoreCounts[hits] ?: 0) + 1
+                            if (lastHit == null) { // Pega a primeira ocorrência, que é a mais recente
+                                lastHit = draw.contestNumber
+                            }
                         }
                     }
+                    CheckResult(
+                        scoreCounts = scoreCounts,
+                        lastHitContest = lastHit,
+                        lastCheckedContest = history.first().contestNumber
+                    )
                 }
-
-                val finalResult = CheckResult(
-                    scoreCounts = scoreCounts,
-                    lastHitContest = lastHit,
-                    lastCheckedContest = historyRepository.getLastContestNumber()
-                )
-
-                _uiState.value = CheckerUiState.Success(finalResult)
+                _uiState.value = CheckerUiState.Success(result)
 
             } catch (e: Exception) {
                 _uiState.value = CheckerUiState.Error("Falha ao conferir os jogos: ${e.message}")

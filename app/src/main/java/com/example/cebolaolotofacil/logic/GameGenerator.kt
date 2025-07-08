@@ -8,7 +8,6 @@ import com.example.cebolaolotofacil.data.LotofacilGame
 class GameGenerationException(message: String) : Exception(message)
 
 object GameGenerator {
-
     private const val DEFAULT_MAX_ATTEMPTS = 100_000
 
     fun generateGames(
@@ -17,9 +16,8 @@ object GameGenerator {
         lastDraw: Set<Int>? = null,
         maxAttempts: Int = DEFAULT_MAX_ATTEMPTS
     ): List<LotofacilGame> {
-        val validGames = mutableListOf<LotofacilGame>()
+        val validGames = mutableSetOf<LotofacilGame>() // Usa Set para evitar duplicatas
         var attempts = 0
-
         val validationAttempts = mutableMapOf<FilterType, Int>()
         activeFilters.forEach { validationAttempts[it.type] = 0 }
 
@@ -39,11 +37,10 @@ object GameGenerator {
             val errorMessage = mostFailedFilter?.let {
                 "Não foi possível gerar os jogos. O filtro '${it.key.title}' parece ser o mais restritivo. Tente ampliar seu intervalo."
             } ?: "Não foi possível gerar jogos com os filtros atuais. Tente ampliar os intervalos."
-
             throw GameGenerationException(errorMessage)
         }
 
-        return validGames
+        return validGames.toList()
     }
 
     private fun isGameValid(
@@ -65,7 +62,8 @@ object GameGenerator {
                 FilterType.FIBONACCI -> game.numbers.count { it in LotofacilConstants.FIBONACCI }
                 FilterType.MULTIPLOS_DE_3 -> game.numbers.count { it % 3 == 0 }
                 FilterType.REPETIDAS_CONCURSO_ANTERIOR -> {
-                    if (lastDraw == null) return true
+                    // Se o último concurso não foi fornecido, o filtro não pode ser aplicado.
+                    if (lastDraw == null || lastDraw.size < 15) return true
                     game.numbers.count { it in lastDraw }
                 }
             }
