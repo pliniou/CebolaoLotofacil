@@ -64,10 +64,10 @@ fun MainScreen() {
             state = pagerState,
             modifier = Modifier.padding(innerPadding)
         ) { pageIndex ->
-            // CORREÇÃO: Usa AnimatedContent para uma transição de fade suave entre as páginas.
             AnimatedContent(
                 targetState = pageIndex,
                 transitionSpec = {
+                    // Transição de fade suave ao trocar de página
                     fadeIn() togetherWith fadeOut()
                 },
                 label = "page_transition"
