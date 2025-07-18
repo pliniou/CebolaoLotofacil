@@ -1,28 +1,34 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization) // Adicionado para processar JSON
 }
 
 android {
-    namespace = "com.example.cebolaolotofacil"
-    // CORREÇÃO: Alinhado a compileSdk com a versão testada do AGP para estabilidade.
+    namespace = "com.cebolao.lotofacil"
+    //noinspection GradleDependency
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.cebolaolotofacil"
+        applicationId = "com.cebolao.lotofacil"
         minSdk = 26
-        // CORREÇÃO: Alinhado a targetSdk com a compileSdk.
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
-
+        versionName = "1.0" // Versão de produção
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,12 +44,15 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -52,27 +61,29 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.runtime:runtime")
-    implementation(libs.androidx.material3.window.size)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.kotlinx.collections.immutable)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Splash Screen
     implementation(libs.androidx.core.splashscreen)
 
-    // Testes de Unidade
-    testImplementation(libs.junit)
-    testImplementation("io.mockk:mockk:1.13.11") // Para mocking
-    testImplementation("app.cash.turbine:turbine:1.1.0") // Para testar Flows
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1") // Para testar Coroutines
+    // Networking - Retrofit para chamadas de API
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.serialization.json)
 
-    // Testes de Instrumentação (UI)
+    // Testes
+    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(kotlin("test"))
 }
